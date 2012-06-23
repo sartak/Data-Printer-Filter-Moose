@@ -37,6 +37,7 @@ filter "-class" => sub {
 
         $output .= _dump_moose_inheritance($meta, $p);
         $output .= _dump_moose_roles($meta, $p);
+        $output .= _dump_moose_attributes($meta, $object, $p);
 
         $p->{_current_indent} -= $p->{indent};
         $output .= (' ' x $p->{_current_indent}) . "}";
@@ -108,6 +109,78 @@ sub _dump_moose_roles {
             }
         }
     }
+
+    return $output;
+}
+
+sub _dump_moose_attributes {
+    my ($meta, $object, $p) = @_;
+    my $output = '';
+
+    my @all_attributes = $meta->get_all_attributes;
+    my @local_attributes = map { $meta->get_attribute($_) } $meta->get_attribute_list;
+
+    my %is_local = map { $_->name => 1 } @local_attributes;
+    my @inherited_attributes = grep { !$is_local{ $_->name } } @all_attributes;
+
+    if ( @local_attributes  ) {
+        if (1 || $p->{class}{local_attributes}) {
+            $output .= (' ' x $p->{_current_indent})
+                    . "Local Attributes  {$BREAK";
+            $p->{_current_indent} += $p->{indent};
+
+            for my $attribute (@local_attributes) {
+                $output .= _dump_moose_attribute($attribute, $object, $p);
+            }
+
+            $p->{_current_indent} -= $p->{indent};
+            $output .= (' ' x $p->{_current_indent}) . "}$BREAK";
+        }
+    }
+
+    if ( @inherited_attributes  ) {
+        if (1 || $p->{class}{inherited_attributes}) {
+            $output .= (' ' x $p->{_current_indent})
+                    . "Inherited Attributes  {$BREAK";
+            $p->{_current_indent} += $p->{indent};
+
+            for my $attribute (@inherited_attributes) {
+                $output .= _dump_moose_attribute($attribute, $object, $p);
+            }
+
+            $p->{_current_indent} -= $p->{indent};
+            $output .= (' ' x $p->{_current_indent}) . "}$BREAK";
+        }
+    }
+
+    return $output;
+}
+
+sub _dump_moose_attribute {
+    my ($attribute, $object, $p) = @_;
+    my $output = '';
+
+    my $accessor = $attribute->get_read_method_ref;
+    my $value = $accessor->execute($object);
+
+    $output .= ' ' x $p->{_current_indent}
+            . $attribute->name . "  {$BREAK";
+    $p->{_current_indent} += $p->{indent};
+
+    $output .= (' ' x $p->{_current_indent})
+            . 'Value  '
+            . Data::Printer::SCALAR(\$value, $p) # XXX _p gives me weird errors
+            . $BREAK;
+
+    if ($attribute->has_type_constraint) {
+        $output .= (' ' x $p->{_current_indent})
+                . 'isa    '
+                . $attribute->type_constraint->name
+                . $BREAK;
+    }
+
+    $p->{_current_indent} -= $p->{indent};
+    $output .= (' ' x $p->{_current_indent}) . "}$BREAK";
 
     return $output;
 }
