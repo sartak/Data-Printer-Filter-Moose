@@ -1,24 +1,32 @@
 Data::Printer ♥ Moose
 
-    My::Moosey::RealPerson  {
-        Parents          My::Moosey::Person
-        Linear @ISA      My::Moosey::RealPerson, My::Moosey::Person, Moose::Object
-        Local Roles      Role::IsPhysicalThing, Role::HasHeight, Role::HasWidth
-        Inherited Roles  Role::HasName
+    Car::Expensive  {
+        Parents          Car::Basic
+        Linear @ISA      Car::Expensive, Car::Basic, Moose::Object
+        Local Roles      HasAirConditioning, HasSpinningRims
+        Inherited Roles  Carlike, HasEngine, HasWheels
         Local Attributes  {
-            width  {
-                value  6
-                isa    Int
+            obligatory_name  {
+                value  "Ham Wagon"
+                isa    Str
             }
-            height  {
-                value  12
-                isa    Int
+            ac  {
+                value  undef
+                isa    Blissful
+            }
+            rims  {
+                value  undef
+                isa    Spin
             }
         }
         Inherited Attributes  {
-            name  {
-                value  "box man"
-                isa    Str
+            wheels  {
+                value  undef
+                isa    Wheels
+            }
+            engine  {
+                value  undef
+                isa    Engine
             }
         }
     }
