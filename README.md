@@ -7,17 +7,17 @@ Data::Printer ♥ Moose
         Inherited Roles  Role::HasName
         Local Attributes  {
             width  {
-                Value  6
+                value  6
                 isa    Int
             }
             height  {
-                Value  12
+                value  12
                 isa    Int
             }
         }
         Inherited Attributes  {
             name  {
-                Value  "box man"
+                value  "box man"
                 isa    Str
             }
         }

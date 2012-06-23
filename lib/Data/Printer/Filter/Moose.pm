@@ -168,7 +168,7 @@ sub _dump_moose_attribute {
     $p->{_current_indent} += $p->{indent};
 
     $output .= (' ' x $p->{_current_indent})
-            . 'Value  '
+            . 'value  '
             . Data::Printer::SCALAR(\$value, $p) # XXX _p gives me weird errors
             . $BREAK;
 
